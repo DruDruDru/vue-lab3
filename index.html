@@ -3,13 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/main.css" />
     <script defer src="js/vue.js"></script>
     <script defer src="js/main.js"></script>
     <title>Доска</title>
 </head>
 <body>
     <div id="app">
-        {{ test }}
+
+        <column
+            :cards="cardsInPlan"
+        ></column>
+
+        <column
+            :cards="cardsInWork"
+        ></column>
+
+        <column
+            :cards="cardsInTest"
+        ></column>
+
+        <column
+            :cards="cardsInComplete"
+        ></column>
+        
     </div>
 </body>
 </html>
