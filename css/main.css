@@ -1,6 +1,6 @@
 #app {
     display: flex;
-    gap: 10em;
+    gap: 2.5em;
     justify-content: center;
 }
 .column-wrap {
@@ -13,6 +13,9 @@
 }
 .column {
     width: 250px;
+    display: flex;
+    gap: 1em;
+    flex-direction: column;
 }
 .card {
     border-radius: 15px;
