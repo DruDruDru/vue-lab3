@@ -7,24 +7,44 @@ Vue.component('column', {
     },
     template: `
         <div class="column">
-            <card v-for="card in cards"></card>
+            <card 
+                v-for="card in cards"
+                :card="card"
+                :key="card.id"
+            ></card>
         </div>
     `
 })
 
 Vue.component('card', {
+    props: {
+        card: {
+            type: Object,
+            required: true,
+        }
+    },
     template: `
-        <p>Test card</p>
-        <span>test</span>
+        <div class="card">
+            <p>{{ card.dateOfCreate }}</p>
+            <p>{{ card.title }}</p>
+            <p>{{ card.description }}</p>
+            <p>{{ card.deadline }}</p>
+        </div>
     `
 })
 
 let app = new Vue({
     el: '#app',
     data: {
-        cardsInPlan: ['first', 'second', 'third'],
-        cardsInWork: ['first', 'second', 'third'],
-        cardsInTest: ['first', 'second', 'third'],
-        cardsInComplete: ['first', 'second', 'third'],
+        cardsInPlan: [{
+            id: 0,
+            dateOfCreate: new Date(),
+            title: 'Сделать лабу',
+            description: 'Нужно сделать лабороторную работу на Vue.js',
+            deadline: new Date(),
+        }],
+        cardsInWork: [],
+        cardsInTest: [],
+        cardsInComplete: [],
     }
 })

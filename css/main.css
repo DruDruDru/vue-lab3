@@ -1,5 +1,21 @@
 #app {
     display: flex;
-    gap: 2.5em;
+    gap: 10em;
     justify-content: center;
+}
+.column-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 15px;
+    border: 2px black solid;
+    padding: 10px;
+}
+.column {
+    width: 250px;
+}
+.card {
+    border-radius: 15px;
+    border: 2px black solid;
+    padding: 10px;
 }

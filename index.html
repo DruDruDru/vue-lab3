@@ -10,23 +10,30 @@
 </head>
 <body>
     <div id="app">
-
-        <column
-            :cards="cardsInPlan"
-        ></column>
-
-        <column
-            :cards="cardsInWork"
-        ></column>
-
-        <column
-            :cards="cardsInTest"
-        ></column>
-
-        <column
-            :cards="cardsInComplete"
-        ></column>
-        
+        <div class="column-wrap">
+            <h2>Запланированные Задачи</h2>
+            <column
+                :cards="cardsInPlan"
+            ></column>
+        </div>
+        <div class="column-wrap">
+            <h2>Задачи в Работе</h2>
+            <column
+                :cards="cardsInWork"
+            ></column>
+        </div>
+        <div class="column-wrap">
+            <h2>Тестирование</h2>
+            <column
+                :cards="cardsInTest"
+            ></column>
+        </div>
+        <div class="column-wrap">
+            <h2>Выполненные Задачи</h2>
+            <column
+                :cards="cardsInComplete"
+            ></column>
+        </div>
     </div>
 </body>
 </html>
