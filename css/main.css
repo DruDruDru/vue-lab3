@@ -24,6 +24,15 @@
 }
 textarea {
     resize: none;
-    width: 250px;
+    width: 225px;
     height: 130px;
+}
+.update {
+    border-radius: 15px;
+    padding: 10px;
+    border: 2px black solid;
+}
+.desciption {
+    height: 125px;
+    word-wrap: break-word;
 }
