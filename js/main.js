@@ -1,3 +1,6 @@
+
+let eventBus = new Vue();
+
 Vue.component('column', {
     props: {
         cards: {
@@ -11,16 +14,9 @@ Vue.component('column', {
                 v-for="card in cards"
                 :card="card"
                 :key="card.id"
-                @card-to-delete="deleteCard"
             ></card>
         </div>
     `,
-    methods: {
-        deleteCard(card) {
-            idx = this.cards.indexOf(card)
-            this.cards = this.cards.filter((value, index) => index !== idx)
-        }
-    }
 })
 
 Vue.component('card', {
@@ -36,14 +32,14 @@ Vue.component('card', {
             <p>{{ card.title }}</p>
             <p>{{ card.description }}</p>
             <p>{{ card.deadline }}</p>
-            <div>
-                <input type="submit" @click="cardToDelete(card)" value="X" />
+            <div class="button-container">
+                <input type="submit" @click="cardToDelete" value="Удалить" />
             </div>
         </div>
     `,
     methods: {
-        cardToDelete(card) {
-            this.$emit('card-to-delete', card);
+        cardToDelete() {
+            eventBus.$emit('card-to-delete', this.card);
         }
     }
 })
@@ -70,5 +66,13 @@ let app = new Vue({
         cardsInWork: [],
         cardsInTest: [],
         cardsInComplete: [],
-    }
+    },
+    mounted() {
+        eventBus.$on('card-to-delete', card => {
+            index = this.cardsInPlan.findIndex(c => c.id === card.id)
+            if (index !== -1) {
+                this.cardsInPlan.splice(index, 1);
+            }
+        })
+    },
 })
