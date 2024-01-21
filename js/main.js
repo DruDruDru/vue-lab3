@@ -53,16 +53,17 @@ Vue.component('card', {
     },
     template: `
         <div>
-            <div class="card" v-show="!click">
+            <div class="card" v-show="!click" :id="card.id">
                 <div class="button-container">
-                    <button @click="cardToPrev"><</button>
-                    <button @click="cardToNext">></button>
+                    <button @click="cardToPrev" class="prevButton"><</button>
+                    <button @click="cardToNext" class="nextButton">></button>
                 </div>
                 <p><strong>Время создания:</strong> {{ card.dateOfCreate }}</p>
                 <p><strong>Название:</strong> {{ card.title }}</p>
                 <p v-if="card.lastUpdate"><strong>Дата последнего обновления:</strong> {{ card.lastUpdate }}</p>
                 <p class="desciption"><strong>Описание:</strong> {{ card.description }}</p>
                 <p><strong>Дэдлайн:</strong> {{ fullDate }}</p>
+                <p v-if="card.dateAnswer"><strong>Статус: </strong>{{ card.dateAnswer }}</p>
                 <div class="button-container">
                     <input type="submit" @click="cardToEdit" value="Редактировать" />
                     <input type="submit" @click="cardToDelete" value="Удалить" class="deleteButton" />
@@ -95,7 +96,7 @@ Vue.component('card', {
     },
     computed: {
         fullDate() {
-            return new Date(this.card.deadline + 'T' + this.card.time)      
+            return new Date(this.card.deadline + 'T' + this.card.time)
         }
     },
     methods: {
@@ -141,31 +142,36 @@ Vue.component('add-card', {
     `,
     data() {
         return {
-            id: 1,
+            id: 3,
             dateOfCreate: null,
             title: null,
             description: null,
             deadline: null,
             time: null,
             lastUpdate: null,
+            dateAnswer: null,
         }
     },
     methods: {
         onSubmit() {
             let card = {
-                id: ++this.Id,
+                id: ++this.id,
                 dateOfCreate: new Date(),
                 title: this.title,
                 description: this.description,
                 deadline: String(this.deadline),
                 time: String(this.time),
                 lastUpdate: null,
+                dateAnswer: null,
             }
             eventBus.$emit('on-submit', card)
             this.dateOfCreate = null
-            this.title = null,
-            this.description = null,
+            this.title = null
+            this.description = null
             this.deadline = null
+            time = null
+            lastUpdate = null
+            dateAnswer = null
             this.$emit('on-submit-for-create-form')
         }
     }
@@ -183,6 +189,7 @@ let app = new Vue({
                 deadline: '2222-02-22',
                 time: '12:22:00',
                 lastUpdate: null,
+                dateAnswer: null,
             },
         ],
         cardsInWork: [
@@ -194,6 +201,7 @@ let app = new Vue({
                 deadline: '2222-02-22',
                 time: '12:22:00',
                 lastUpdate: null,
+                dateAnswer: null,
             },
         ],
         cardsInTest: [
@@ -205,6 +213,7 @@ let app = new Vue({
                 deadline: '2222-02-22',
                 time: '12:22:00',
                 lastUpdate: null,
+                dateAnswer: null,
             },
         ],
         cardsInComplete: [
@@ -216,12 +225,16 @@ let app = new Vue({
                 deadline: '2222-02-22',
                 time: '12:22:00',
                 lastUpdate: null,
+                dateAnswer: 'Успел',
             },
         ],
     },
     mounted() {
+
+        let cards = document.querySelectorAll('.cards')
+
         eventBus.$on('card-to-delete', card => {
-            index = this.cardsInPlan.indexOf(card)
+            let index = this.cardsInPlan.indexOf(card)
             if (index !== -1) {
                 this.cardsInPlan.splice(index, 1);
             }
@@ -239,9 +252,19 @@ let app = new Vue({
             } else if (this.cardsInTest.indexOf(card) !== -1) {
                 this.cardsInTest.splice(this.cardsInTest.indexOf(card), 1)
                 this.cardsInComplete.push(card)
+                let deadline = new Date(card.deadline + 'T' + card.time) 
+                if (new Date() > deadline) {
+                    card.dateAnswer = 'Просрочен'
+                } else {
+                    card.dateAnswer = 'Успел'
+                }
             }
         })
-        // eventBus.$on('card-to-prev', card => {
-        // })
+        eventBus.$on('card-to-prev', card => {
+            if (this.cardsInTest.indexOf(card) !== -1) {
+                this.cardsInTest.splice(this.cardsInTest.indexOf(card), 1)
+                this.cardsInWork.push(card)
+            }
+        })
     },
 })
