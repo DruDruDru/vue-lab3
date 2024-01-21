@@ -6,6 +6,10 @@ Vue.component('column', {
         cards: {
             type: Array,
             required: true,
+        },
+        addable: {
+            type: Boolean,
+            required: true,
         }  
     },
     template: `
@@ -15,7 +19,7 @@ Vue.component('column', {
                 :card="card"
                 :key="card.id"
             ></card>
-            <button @click="onClick" v-show="!click">Добавить</button>
+            <button @click="onClick" v-show="!click" v-if="addable">Добавить</button>
             <add-card 
                 v-show="click"
                 @on-submit-for-click="onClick"

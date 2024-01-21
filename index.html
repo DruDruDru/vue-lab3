@@ -14,24 +14,28 @@
             <h2>Запланированные Задачи</h2>
             <column
                 :cards="cardsInPlan"
+                :addable="true"
             ></column>
         </div>
         <div class="column-wrap">
             <h2>Задачи в Работе</h2>
             <column
                 :cards="cardsInWork"
+                :addable="false"
             ></column>
         </div>
         <div class="column-wrap">
             <h2>Тестирование</h2>
             <column
                 :cards="cardsInTest"
+                :addable="false"
             ></column>
         </div>
         <div class="column-wrap">
             <h2>Выполненные Задачи</h2>
             <column
                 :cards="cardsInComplete"
+                :addable="false"
             ></column>
         </div>
     </div>
