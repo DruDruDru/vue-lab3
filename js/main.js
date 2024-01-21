@@ -58,11 +58,16 @@ Vue.component('card', {
                     <button @click="cardToPrev" class="prevButton"><</button>
                     <button @click="cardToNext" class="nextButton">></button>
                 </div>
+                <form @submit.prevent="onPrevSubmit" v-show="clickOnPrev" class="reason-form">
+                    <input type="text" maxlength=50 v-model="card.reason" />
+                    <input type="submit" value="Отправить" />
+                </form>
                 <p><strong>Время создания:</strong> {{ card.dateOfCreate }}</p>
                 <p><strong>Название:</strong> {{ card.title }}</p>
                 <p v-if="card.lastUpdate"><strong>Дата последнего обновления:</strong> {{ card.lastUpdate }}</p>
                 <p class="desciption"><strong>Описание:</strong> {{ card.description }}</p>
                 <p><strong>Дэдлайн:</strong> {{ fullDate }}</p>
+                <p v-if="card.reason"><strong>Причина возврата: </strong>{{ card.reason }}</p>
                 <p v-if="card.dateAnswer"><strong>Статус: </strong>{{ card.dateAnswer }}</p>
                 <div class="button-container">
                     <input type="submit" @click="cardToEdit" value="Редактировать" />
@@ -92,6 +97,7 @@ Vue.component('card', {
     data() {
         return {
             click: false,
+            clickOnPrev: false,
         }
     },
     computed: {
@@ -104,6 +110,12 @@ Vue.component('card', {
             this.click=false
             this.card.lastUpdate = new Date();
         },
+        onPrevSubmit() {
+            this.clickOnPrev = false
+            if (this.card.reason) {
+                eventBus.$emit('card-to-prev', this.card);
+            }
+        },
         cardToDelete() {
             eventBus.$emit('card-to-delete', this.card);
         },
@@ -111,7 +123,7 @@ Vue.component('card', {
             eventBus.$emit('card-to-next', this.card);
         },
         cardToPrev() {
-            eventBus.$emit('card-to-prev', this.card);
+            this.clickOnPrev = true
         },
         cardToEdit() {
             this.click = true;
@@ -150,6 +162,7 @@ Vue.component('add-card', {
             time: null,
             lastUpdate: null,
             dateAnswer: null,
+            reason: null,
         }
     },
     methods: {
@@ -161,17 +174,19 @@ Vue.component('add-card', {
                 description: this.description,
                 deadline: String(this.deadline),
                 time: String(this.time),
-                lastUpdate: null,
-                dateAnswer: null,
+                lastUpdate: this.lastUpdate,
+                dateAnswer: this.dateAnswer,
+                reason: this.reason,
             }
             eventBus.$emit('on-submit', card)
             this.dateOfCreate = null
             this.title = null
             this.description = null
             this.deadline = null
-            time = null
-            lastUpdate = null
-            dateAnswer = null
+            this.time = null
+            this.lastUpdate = null
+            this.dateAnswer = null
+            this.reason = null,
             this.$emit('on-submit-for-create-form')
         }
     }
@@ -190,6 +205,7 @@ let app = new Vue({
                 time: '12:22:00',
                 lastUpdate: null,
                 dateAnswer: null,
+                reason: null,
             },
         ],
         cardsInWork: [
@@ -202,6 +218,7 @@ let app = new Vue({
                 time: '12:22:00',
                 lastUpdate: null,
                 dateAnswer: null,
+                reason: null,
             },
         ],
         cardsInTest: [
@@ -214,6 +231,7 @@ let app = new Vue({
                 time: '12:22:00',
                 lastUpdate: null,
                 dateAnswer: null,
+                reason: null,
             },
         ],
         cardsInComplete: [
@@ -226,13 +244,11 @@ let app = new Vue({
                 time: '12:22:00',
                 lastUpdate: null,
                 dateAnswer: 'Успел',
+                reason: null,
             },
         ],
     },
     mounted() {
-
-        let cards = document.querySelectorAll('.cards')
-
         eventBus.$on('card-to-delete', card => {
             let index = this.cardsInPlan.indexOf(card)
             if (index !== -1) {

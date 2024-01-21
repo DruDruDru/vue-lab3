@@ -41,9 +41,20 @@ textarea {
     gap: 2.5em;
     justify-content: center;
 }
+.reason-form {
+    display: flex;
+    flex-direction: column;
+}
 #secondColumn .deleteButton, 
 #thirdColumn .deleteButton, 
 #fouthColumn .deleteButton {
     display: none;
 }
-
+#firstColumn .prevButton,
+#secondColumn .prevButton,
+#fouthColumn .prevButton {
+    display: none;
+}
+#fouthColumn .nextButton {
+    display: none;
+}
