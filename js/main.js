@@ -85,7 +85,7 @@ Vue.component('card', {
                 </p>
                 <p>
                     <label for="deadline">Дедлайн:</label></br>
-                    <input type="date" required id="deadline" v-model="card.deadline" />
+                    <input type="date" required id="deadline" max="9999-12-31" v-model="card.deadline" />
                     <input type="time" required id="deadline" v-model="card.time" />
                 </p>
                 <p>
@@ -144,7 +144,7 @@ Vue.component('add-card', {
             </p>
             <p>
                 <label for="deadline">Дедлайн:</label></br>
-                <input type="date" required id="deadline" maxlength=8 v-model="deadline" />
+                <input type="date" required id="deadline" max="9999-12-31" v-model="deadline" />
                 <input type="time" required id="deadline" v-model="time" />
             </p>
             <p>
