@@ -36,6 +36,11 @@ textarea {
     height: 150px;
     word-wrap: break-word;
 }
+.button-container {
+    display: flex;
+    gap: 2.5em;
+    justify-content: center;
+}
 #secondColumn .deleteButton, 
 #thirdColumn .deleteButton, 
 #fouthColumn .deleteButton {

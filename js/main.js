@@ -54,6 +54,10 @@ Vue.component('card', {
     template: `
         <div>
             <div class="card" v-show="!click">
+                <div class="button-container">
+                    <button @click="cardToPrev"><</button>
+                    <button @click="cardToNext">></button>
+                </div>
                 <p><strong>Время создания:</strong> {{ card.dateOfCreate }}</p>
                 <p><strong>Название:</strong> {{ card.title }}</p>
                 <p v-if="card.lastUpdate"><strong>Дата последнего обновления:</strong> {{ card.lastUpdate }}</p>
@@ -64,7 +68,6 @@ Vue.component('card', {
                     <input type="submit" @click="cardToDelete" value="Удалить" class="deleteButton" />
                 </div>
             </div>
-            
             <form @submit.prevent="onSubmit" v-show="click" class="update">
                 <p>
                     <label for="title">Заголовок:</label>
@@ -103,10 +106,16 @@ Vue.component('card', {
         cardToDelete() {
             eventBus.$emit('card-to-delete', this.card);
         },
+        cardToNext() {
+            eventBus.$emit('card-to-next', this.card);
+        },
+        cardToPrev() {
+            eventBus.$emit('card-to-prev', this.card);
+        },
         cardToEdit() {
             this.click = true;
-        }
-    },
+        },
+    }
 })
 
 Vue.component('add-card', {
@@ -219,6 +228,20 @@ let app = new Vue({
         }),
         eventBus.$on('on-submit', card => {
             this.cardsInPlan.push(card)
+        }),
+        eventBus.$on('card-to-next', card => {
+            if (this.cardsInPlan.indexOf(card) !== -1) {
+                this.cardsInPlan.splice(this.cardsInPlan.indexOf(card), 1)
+                this.cardsInWork.push(card)
+            } else if (this.cardsInWork.indexOf(card) !== -1) {
+                this.cardsInWork.splice(this.cardsInWork.indexOf(card), 1)
+                this.cardsInTest.push(card)
+            } else if (this.cardsInTest.indexOf(card) !== -1) {
+                this.cardsInTest.splice(this.cardsInTest.indexOf(card), 1)
+                this.cardsInComplete.push(card)
+            }
         })
+        // eventBus.$on('card-to-prev', card => {
+        // })
     },
 })
