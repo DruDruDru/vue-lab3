@@ -25,7 +25,7 @@
 textarea {
     resize: none;
     width: 225px;
-    height: 130px;
+    height: 170px;
 }
 .update {
     border-radius: 15px;
@@ -33,6 +33,11 @@ textarea {
     border: 2px black solid;
 }
 .desciption {
-    height: 125px;
+    height: 150px;
     word-wrap: break-word;
+}
+#secondColumn .deleteButton, 
+#thirdColumn .deleteButton, 
+#fouthColumn .deleteButton {
+    display: none;
 }

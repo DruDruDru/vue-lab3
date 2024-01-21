@@ -54,13 +54,14 @@ Vue.component('card', {
     template: `
         <div>
             <div class="card" v-show="!click">
-                <p>{{ card.dateOfCreate }}</p>
-                <p>{{ card.title }}</p>
-                <p class="desciption">{{ card.description }}</p>
-                <p>Дэдлайн: {{ fullDate }}</p>
+                <p><strong>Время создания:</strong> {{ card.dateOfCreate }}</p>
+                <p><strong>Название:</strong> {{ card.title }}</p>
+                <p v-if="card.lastUpdate"><strong>Дата последнего обновления:</strong> {{ card.lastUpdate }}</p>
+                <p class="desciption"><strong>Описание:</strong> {{ card.description }}</p>
+                <p><strong>Дэдлайн:</strong> {{ fullDate }}</p>
                 <div class="button-container">
                     <input type="submit" @click="cardToEdit" value="Редактировать" />
-                    <input type="submit" @click="cardToDelete" value="Удалить" />
+                    <input type="submit" @click="cardToDelete" value="Удалить" class="deleteButton" />
                 </div>
             </div>
             
@@ -97,6 +98,7 @@ Vue.component('card', {
     methods: {
         onSubmit() {
             this.click=false
+            this.card.lastUpdate = new Date();
         },
         cardToDelete() {
             eventBus.$emit('card-to-delete', this.card);
@@ -120,7 +122,7 @@ Vue.component('add-card', {
             </p>
             <p>
                 <label for="deadline">Дедлайн:</label></br>
-                <input type="date" required id="deadline" v-model="deadline" />
+                <input type="date" required id="deadline" maxlength=8 v-model="deadline" />
                 <input type="time" required id="deadline" v-model="time" />
             </p>
             <p>
@@ -130,21 +132,25 @@ Vue.component('add-card', {
     `,
     data() {
         return {
+            id: 1,
             dateOfCreate: null,
             title: null,
             description: null,
             deadline: null,
             time: null,
+            lastUpdate: null,
         }
     },
     methods: {
         onSubmit() {
             let card = {
+                id: ++this.Id,
                 dateOfCreate: new Date(),
                 title: this.title,
                 description: this.description,
                 deadline: String(this.deadline),
-                time: String(this.time)
+                time: String(this.time),
+                lastUpdate: null,
             }
             eventBus.$emit('on-submit', card)
             this.dateOfCreate = null
@@ -166,24 +172,47 @@ let app = new Vue({
                 title: 'Сделать лабу',
                 description: 'Нужно сделать лабороторную работу на Vue.js',
                 deadline: '2222-02-22',
-                time: '12:22:00'
+                time: '12:22:00',
+                lastUpdate: null,
             },
+        ],
+        cardsInWork: [
             {
                 id: 1,
                 dateOfCreate: new Date(),
                 title: 'Сделать лабуi',
                 description: 'Нужно сделать лабороторную работу на Vue.js',
                 deadline: '2222-02-22',
-                time: '12:22:00'
+                time: '12:22:00',
+                lastUpdate: null,
             },
         ],
-        cardsInWork: [],
-        cardsInTest: [],
-        cardsInComplete: [],
+        cardsInTest: [
+            {
+                id: 2,
+                dateOfCreate: new Date(),
+                title: 'Сделать лабуi',
+                description: 'Нужно сделать лабороторную работу на Vue.js',
+                deadline: '2222-02-22',
+                time: '12:22:00',
+                lastUpdate: null,
+            },
+        ],
+        cardsInComplete: [
+            {
+                id: 3,
+                dateOfCreate: new Date(),
+                title: 'Сделать лабуi',
+                description: 'Нужно сделать лабороторную работу на Vue.js',
+                deadline: '2222-02-22',
+                time: '12:22:00',
+                lastUpdate: null,
+            },
+        ],
     },
     mounted() {
         eventBus.$on('card-to-delete', card => {
-            index = this.cardsInPlan.findIndex(c => c.id === card.id)
+            index = this.cardsInPlan.indexOf(card)
             if (index !== -1) {
                 this.cardsInPlan.splice(index, 1);
             }
