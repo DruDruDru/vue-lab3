@@ -22,3 +22,8 @@
     border: 2px black solid;
     padding: 10px;
 }
+textarea {
+    resize: none;
+    width: 250px;
+    height: 130px;
+}

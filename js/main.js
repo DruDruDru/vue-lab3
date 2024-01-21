@@ -15,8 +15,24 @@ Vue.component('column', {
                 :card="card"
                 :key="card.id"
             ></card>
+            <button @click="onClick" v-show="!click">Добавить</button>
+            <add-card 
+                v-show="click"
+                @on-submit-for-click="onClick"
+            ></add-card>
         </div>
     `,
+    data() {
+        return {
+            click: false,
+        }
+    },
+    methods: {
+        onClick() {
+            if (this.click) this.click = false
+            else this.click = true
+        }
+    }
 })
 
 Vue.component('card', {
@@ -40,6 +56,53 @@ Vue.component('card', {
     methods: {
         cardToDelete() {
             eventBus.$emit('card-to-delete', this.card);
+        },
+    }
+})
+
+Vue.component('add-card', {
+    template: `
+        <form @submit.prevent="onSubmit">
+            <p>
+                <label for="title">Заголовок:</label>
+                <input type="text" required maxlength=25 v-model="title" id="title" />
+            </p>
+            <p>
+                <label for="description">Описание:</label>
+                <textarea required id="description" maxlength=255 v-model="description"></textarea>
+            </p>
+            <p>
+                <label for="deadline">Дедлайн:</label>
+                <input type="date" required id="deadline" v-model="deadline" />
+            </p>
+            <p>
+                <input type="submit" value="Отправить" />
+            </p>
+        </form>
+    `,
+    data() {
+        return {
+            dateOfCreate: null,
+            title: null,
+            description: null,
+            deadline: null,
+            click: false
+        }
+    },
+    methods: {
+        onSubmit() {
+            let card = {
+                dateOfCreate: new Date(),
+                title: this.title,
+                description: this.description,
+                deadline: this.deadline
+            }
+            eventBus.$emit('on-submit', card)
+            this.dateOfCreate = null
+            this.title = null,
+            this.description = null,
+            this.deadline = null
+            this.$emit('on-submit-for-click')
         }
     }
 })
@@ -73,6 +136,9 @@ let app = new Vue({
             if (index !== -1) {
                 this.cardsInPlan.splice(index, 1);
             }
+        }),
+        eventBus.$on('on-submit', card => {
+            this.cardsInPlan.push(card)
         })
     },
 })
