@@ -57,7 +57,7 @@ Vue.component('card', {
                 <p>{{ card.dateOfCreate }}</p>
                 <p>{{ card.title }}</p>
                 <p class="desciption">{{ card.description }}</p>
-                <p>Дэдлайн: {{ card.deadline }}</p>
+                <p>Дэдлайн: {{ fullDate }}</p>
                 <div class="button-container">
                     <input type="submit" @click="cardToEdit" value="Редактировать" />
                     <input type="submit" @click="cardToDelete" value="Удалить" />
@@ -74,8 +74,9 @@ Vue.component('card', {
                     <textarea required id="description" maxlength=100 v-model="card.description"></textarea>
                 </p>
                 <p>
-                    <label for="deadline">Дедлайн:</label>
+                    <label for="deadline">Дедлайн:</label></br>
                     <input type="date" required id="deadline" v-model="card.deadline" />
+                    <input type="time" required id="deadline" v-model="card.time" />
                 </p>
                 <p>
                     <input type="submit" value="Сохранить" />
@@ -88,12 +89,10 @@ Vue.component('card', {
             click: false,
         }
     },
-    mounted() {
-        let date = this.card.deadline
-        let year = date.getFullYear()
-        let month = (date.getMonth() + 1).toString().padStart(2, '0');
-        let day = (date.getDate()).toString().padStart(2, '0');
-        this.card.deadline = `${year}-${month}-${day}`
+    computed: {
+        fullDate() {
+            return new Date(this.card.deadline + 'T' + this.card.time)      
+        }
     },
     methods: {
         onSubmit() {
@@ -104,7 +103,6 @@ Vue.component('card', {
         },
         cardToEdit() {
             this.click = true;
-            eventBus.$emit('card-to-edit', this.card);
         }
     },
 })
@@ -121,8 +119,9 @@ Vue.component('add-card', {
                 <textarea required id="description" maxlength=255 v-model="description"></textarea>
             </p>
             <p>
-                <label for="deadline">Дедлайн:</label>
+                <label for="deadline">Дедлайн:</label></br>
                 <input type="date" required id="deadline" v-model="deadline" />
+                <input type="time" required id="deadline" v-model="time" />
             </p>
             <p>
                 <input type="submit" value="Сохранить" />
@@ -135,6 +134,7 @@ Vue.component('add-card', {
             title: null,
             description: null,
             deadline: null,
+            time: null,
         }
     },
     methods: {
@@ -143,7 +143,8 @@ Vue.component('add-card', {
                 dateOfCreate: new Date(),
                 title: this.title,
                 description: this.description,
-                deadline: new Date(this.deadline)
+                deadline: String(this.deadline),
+                time: String(this.time)
             }
             eventBus.$emit('on-submit', card)
             this.dateOfCreate = null
@@ -164,14 +165,16 @@ let app = new Vue({
                 dateOfCreate: new Date(),
                 title: 'Сделать лабу',
                 description: 'Нужно сделать лабороторную работу на Vue.js',
-                deadline: new Date('2024-10-12'),
+                deadline: '2222-02-22',
+                time: '12:22:00'
             },
             {
                 id: 1,
                 dateOfCreate: new Date(),
                 title: 'Сделать лабуi',
                 description: 'Нужно сделать лабороторную работу на Vue.js',
-                deadline: new Date('2024-10-12'),
+                deadline: '2222-02-22',
+                time: '12:22:00'
             },
         ],
         cardsInWork: [],
@@ -187,9 +190,6 @@ let app = new Vue({
         }),
         eventBus.$on('on-submit', card => {
             this.cardsInPlan.push(card)
-        }),
-        eventBus.$on('card-to-edit', card => {
-
         })
     },
 })
