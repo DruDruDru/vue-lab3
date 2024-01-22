@@ -71,7 +71,7 @@ Vue.component('card', {
                 <p v-if="card.dateAnswer"><strong>Статус: </strong>{{ card.dateAnswer }}</p>
                 <div class="button-container">
                     <input type="submit" @click="cardToEdit" value="Редактировать" />
-                    <input type="submit" @click="cardToDelete" value="Удалить" class="deleteButton" />
+                    <input type="checkbox" v-model="card.checked" />
                 </div>
             </div>
             <form @submit.prevent="onSubmit" v-show="click" class="update">
@@ -116,9 +116,6 @@ Vue.component('card', {
                 eventBus.$emit('card-to-prev', this.card);
             }
         },
-        cardToDelete() {
-            eventBus.$emit('card-to-delete', this.card);
-        },
         cardToNext() {
             eventBus.$emit('card-to-next', this.card);
         },
@@ -155,6 +152,7 @@ Vue.component('add-card', {
     data() {
         return {
             id: 3,
+            checked: false,
             dateOfCreate: null,
             title: null,
             description: null,
@@ -169,6 +167,7 @@ Vue.component('add-card', {
         onSubmit() {
             let card = {
                 id: ++this.id,
+                checked: false,
                 dateOfCreate: new Date(),
                 title: this.title,
                 description: this.description,
@@ -192,6 +191,35 @@ Vue.component('add-card', {
     }
 })
 
+Vue.component('tool-panel', {
+    template: `
+        <div class="tool-panel">
+            <form class="findForm" @submit.prevent="onSubmit">
+                <input type="text" v-model="findText" /></br>
+                <input type="submit" value="Поиск" />
+            </form>
+            <button value="Очистить" @click="onRefresh">Очистить</button>
+            <input type="submit" value="Удалить выделенные" @click="cardToDelete">
+        </div>
+    `,
+    data() {
+        return {
+            findText: null
+        }
+    },
+    methods: {
+        onRefresh() {
+            eventBus.$emit('onRefresh')
+        },
+        onSubmit() {
+            findText = this.findText
+            eventBus.$emit('onFind', this.findText)
+        },
+        cardToDelete() {
+            eventBus.$emit('card-to-delete');
+        },
+    }
+})
 let app = new Vue({
     el: '#app',
     data: {
@@ -205,6 +233,7 @@ let app = new Vue({
                 time: '12:22:00',
                 lastUpdate: null,
                 dateAnswer: null,
+                checked: false,
                 reason: null,
             },
         ],
@@ -218,6 +247,7 @@ let app = new Vue({
                 time: '12:22:00',
                 lastUpdate: null,
                 dateAnswer: null,
+                checked: false,
                 reason: null,
             },
         ],
@@ -231,6 +261,7 @@ let app = new Vue({
                 time: '12:22:00',
                 lastUpdate: null,
                 dateAnswer: null,
+                checked: false,
                 reason: null,
             },
         ],
@@ -244,16 +275,39 @@ let app = new Vue({
                 time: '12:22:00',
                 lastUpdate: null,
                 dateAnswer: 'Успел',
+                checked: false,
                 reason: null,
             },
         ],
     },
     mounted() {
-        eventBus.$on('card-to-delete', card => {
-            let index = this.cardsInPlan.indexOf(card)
-            if (index !== -1) {
-                this.cardsInPlan.splice(index, 1);
+        eventBus.$on('card-to-delete', () => {
+            
+            for (let card of this.cardsInPlan) {
+                if (card.checked) {
+                    let index = this.cardsInPlan.indexOf(card)
+                    this.cardsInPlan = this.cardsInPlan.filter((value, idx) => idx !== index)
+                }
             }
+            for (let card of this.cardsInWork) {
+                if (card.checked) {
+                    let index = this.cardsInWork.indexOf(card)
+                    this.cardsInWork.splice(index, 1)
+                }
+            }
+            for (let card of this.cardsInTest) {
+                if (card.checked) {
+                    let index = this.cardsInTest.indexOf(card)
+                    this.cardsInTest.splice(index, 1)
+                }
+            }
+            for (let card of this.cardsInComplete) {
+                if (card.checked) {
+                    let index = this.cardsInComplete.indexOf(card)
+                    this.cardsInComplete.splice(index, 1)
+                }
+            }
+            
         }),
         eventBus.$on('on-submit', card => {
             this.cardsInPlan.push(card)
@@ -280,6 +334,55 @@ let app = new Vue({
             if (this.cardsInTest.indexOf(card) !== -1) {
                 this.cardsInTest.splice(this.cardsInTest.indexOf(card), 1)
                 this.cardsInWork.push(card)
+            }
+        })
+        eventBus.$on('onRefresh', () => {
+            cards = document.querySelectorAll('.card')
+            for (card of cards) {
+                card.style.border = "2px black solid"
+            }
+        })
+        eventBus.$on('onFind', text => {
+            cards = document.querySelectorAll('.card')
+            for (card of cards) {
+                card.style.border = "2px black solid"
+            }
+            for (let card of this.cardsInPlan) {
+                if ((card.title.toLowerCase().includes(text.toLowerCase())) ||
+                    (card.description.toLowerCase().includes(text.toLowerCase())) ||
+                    (String(card.dateOfCreate).toLowerCase().includes(text.toLowerCase())) ||
+                    (String(card.deadline).toLowerCase().includes(text.toLowerCase()))) {
+                    
+                    document.getElementById(card.id).style.border = '5px purple dashed'
+                }
+            
+            }
+            for (let card of this.cardsInWork) {
+                if ((card.title.toLowerCase().includes(text.toLowerCase())) ||
+                    (card.description.toLowerCase().includes(text.toLowerCase())) ||
+                    (String(card.dateOfCreate).toLowerCase().includes(text.toLowerCase())) ||
+                    (String(card.deadline).toLowerCase().includes(text.toLowerCase()))) {
+                    
+                    document.getElementById(card.id).style.border = '5px purple dashed' 
+                }
+            }
+            for (let card of this.cardsInTest) {
+                if ((card.title.toLowerCase().includes(text.toLowerCase())) ||
+                    (card.description.toLowerCase().includes(text.toLowerCase())) ||
+                    (String(card.dateOfCreate).toLowerCase().includes(text.toLowerCase())) ||
+                    (String(card.deadline).toLowerCase().includes(text.toLowerCase()))) {
+                    
+                    document.getElementById(card.id).style.border = '5px purple dashed' 
+                }
+            }
+            for (let card of this.cardsInComplete) {
+                if ((card.title.toLowerCase().includes(text.toLowerCase())) ||
+                    (card.description.toLowerCase().includes(text.toLowerCase())) ||
+                    (String(card.dateOfCreate).toLowerCase().includes(text.toLowerCase())) ||
+                    (String(card.deadline).toLowerCase().includes(text.toLowerCase()))) {
+                    
+                    document.getElementById(card.id).style.border = '5px purple dashed' 
+                }
             }
         })
     },

@@ -1,5 +1,10 @@
 #app {
     display: flex;
+    gap: 50px;
+    margin-left: 50px;
+}
+#app > div {
+    display: flex;
     gap: 2.5em;
     justify-content: center;
 }
@@ -57,4 +62,16 @@ textarea {
 }
 #fouthColumn .nextButton {
     display: none;
+}
+.tool-panel {
+    border-radius: 15px;
+    padding: 10px;
+    border: 2px black solid;
+    height: 25vh;
+}
+.findForm {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
 }
